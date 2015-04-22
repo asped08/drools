@@ -9,9 +9,24 @@ import org.drools.core.spi.PropagationContext;
 
 public interface PropagationEntry {
 
-    public void execute(InternalWorkingMemory wm);
+    void execute(InternalWorkingMemory wm);
 
-    public static class Insert implements PropagationEntry {
+    PropagationEntry getNext();
+    void setNext(PropagationEntry next);
+
+    abstract class AbstractPropagationEntry implements PropagationEntry {
+        private PropagationEntry next;
+
+        public void setNext(PropagationEntry next) {
+            this.next = next;
+        }
+
+        public PropagationEntry getNext() {
+            return next;
+        }
+    }
+
+    class Insert extends AbstractPropagationEntry {
         private final ObjectTypeNode[] otns;
         private final InternalFactHandle handle;
         private final PropagationContext context;
@@ -34,7 +49,7 @@ public interface PropagationEntry {
         }
     }
 
-    public static class Update implements PropagationEntry {
+    class Update extends AbstractPropagationEntry {
         private final EntryPointNode epn;
         private final InternalFactHandle handle;
         private final PropagationContext context;
@@ -57,7 +72,7 @@ public interface PropagationEntry {
         }
     }
 
-    public static class Delete implements PropagationEntry {
+    class Delete extends AbstractPropagationEntry {
         private final EntryPointNode epn;
         private final InternalFactHandle handle;
         private final PropagationContext context;

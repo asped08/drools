@@ -71,6 +71,7 @@ import org.drools.core.phreak.PropagationList;
 import org.drools.core.phreak.RuleAgendaItem;
 import org.drools.core.phreak.RuleExecutor;
 import org.drools.core.phreak.SegmentUtilities;
+import org.drools.core.phreak.SynchronizedPropagationList;
 import org.drools.core.reteoo.ClassObjectTypeConf;
 import org.drools.core.reteoo.EntryPointNode;
 import org.drools.core.reteoo.InitialFactImpl;
@@ -386,7 +387,7 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         if (!kBase.getConfiguration().isPhreakEnabled()) {
             config.setThreadSafe(false);
         }
-        propagationList = new PropagationList();
+        propagationList = new SynchronizedPropagationList();
 
         this.propagationIdCounter = new AtomicLong(propagationContext);
 

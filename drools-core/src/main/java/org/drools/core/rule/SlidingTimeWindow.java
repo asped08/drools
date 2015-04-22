@@ -31,6 +31,7 @@ import org.drools.core.marshalling.impl.ProtobufMessages.ActionQueue.Action;
 import org.drools.core.marshalling.impl.ProtobufMessages.Timers.Timer;
 import org.drools.core.marshalling.impl.TimersInputMarshaller;
 import org.drools.core.marshalling.impl.TimersOutputMarshaller;
+import org.drools.core.phreak.PropagationEntry;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.WindowNode;
 import org.drools.core.reteoo.WindowNode.WindowMemory;
@@ -415,8 +416,8 @@ public class SlidingTimeWindow
     }
 
     public static class BehaviorExpireWMAction
-        implements
-        WorkingMemoryAction {
+        extends PropagationEntry.AbstractPropagationEntry
+        implements WorkingMemoryAction {
         private final Behavior behavior;
         private final Object   context;
         private final int nodeId;

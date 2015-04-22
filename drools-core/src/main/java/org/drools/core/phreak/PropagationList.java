@@ -2,28 +2,10 @@ package org.drools.core.phreak;
 
 import org.drools.core.common.InternalWorkingMemory;
 
-import java.util.LinkedList;
+public interface PropagationList {
+    void addEntry(PropagationEntry propagationEntry);
 
-public class PropagationList {
+    void flush(InternalWorkingMemory workingMemory);
 
-    private final LinkedList<PropagationEntry> list = new LinkedList<PropagationEntry>();
-
-    public synchronized void addEntry(PropagationEntry propagationEntry) {
-        list.add(propagationEntry);
-    }
-
-    public synchronized void flush(InternalWorkingMemory workingMemory) {
-        while (!list.isEmpty()) {
-            list.removeFirst().execute(workingMemory);
-        }
-    }
-
-    public synchronized void reset() {
-        list.clear();
-    }
-
-    @Override
-    public String toString() {
-        return list.toString();
-    }
+    public void reset();
 }
