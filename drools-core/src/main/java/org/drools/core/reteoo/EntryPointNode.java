@@ -263,7 +263,7 @@ public class EntryPointNode extends ObjectSource
             long expirationOffset = ((ClassObjectTypeConf) objectTypeConf).getExpirationOffset();
             if ( expirationOffset >= 0 && expirationOffset != Long.MAX_VALUE ) {
                 scheduleExpiration(context, workingMemory, handle, expirationOffset,
-                                   new StatefulKnowledgeSessionImpl.WorkingMemoryReteExpireAction(handle));
+                                   new StatefulKnowledgeSessionImpl.WorkingMemoryReteExpireAction((EventFactHandle)handle));
             }
         }
 

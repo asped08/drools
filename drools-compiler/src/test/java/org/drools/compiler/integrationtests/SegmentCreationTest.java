@@ -1,8 +1,8 @@
 package org.drools.compiler.integrationtests;
 
 import org.drools.core.base.ClassObjectType;
+import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.impl.KnowledgeBaseImpl;
-import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.reteoo.BetaMemory;
 import org.drools.core.reteoo.ConditionalBranchNode;
 import org.drools.core.reteoo.InitialFactImpl;
@@ -12,7 +12,6 @@ import org.drools.core.reteoo.LeftInputAdapterNode.LiaNodeMemory;
 import org.drools.core.reteoo.NotNode;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.PathMemory;
-import org.drools.core.reteoo.ReteooWorkingMemoryInterface;
 import org.drools.core.reteoo.RightInputAdapterNode;
 import org.drools.core.reteoo.RuleTerminalNode;
 import org.drools.core.reteoo.SegmentMemory;
@@ -37,7 +36,7 @@ public class SegmentCreationTest {
     public void testSingleEmptyLhs() throws Exception {
         KnowledgeBase kbase = buildKnowledgeBase(" ");
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, InitialFactImpl.class );
 
@@ -61,7 +60,7 @@ public class SegmentCreationTest {
     public void testSingleSharedEmptyLhs() throws Exception {
         KnowledgeBase kbase = buildKnowledgeBase( " ", " ");
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, InitialFactImpl.class );
 
@@ -92,7 +91,7 @@ public class SegmentCreationTest {
     public void testSinglePattern() throws Exception {
         KnowledgeBase kbase = buildKnowledgeBase("   A() \n");
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -117,7 +116,7 @@ public class SegmentCreationTest {
         KnowledgeBase kbase = buildKnowledgeBase( "   A() \n",
                                                   "   A() \n");
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -150,7 +149,7 @@ public class SegmentCreationTest {
                                                   "   A() B() \n",
                                                   "   A() B() C() \n");
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -203,7 +202,7 @@ public class SegmentCreationTest {
     public void testSubnetworkNoSharing() throws Exception {
         KnowledgeBase kbase = buildKnowledgeBase( " A()  not ( B() and C() ) \n" );
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -245,7 +244,7 @@ public class SegmentCreationTest {
         KnowledgeBase kbase = buildKnowledgeBase( "   A() \n", 
                                                   "   A()  not ( B() and C() ) \n" );
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -292,7 +291,7 @@ public class SegmentCreationTest {
                                                   "   A() B() C() \n",
                                                   "   A()  not ( B() and C() ) \n" );
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
         
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -349,7 +348,7 @@ public class SegmentCreationTest {
                                                   "   if ( $a != null ) do[t1] \n" +
                                                   "   B() \n" );
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
 
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 
@@ -402,7 +401,7 @@ public class SegmentCreationTest {
                                                   "   C() \n" // r3
                                                 );
 
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl)kbase.newStatefulKnowledgeSession());
+        InternalWorkingMemory wm = ((InternalWorkingMemory)kbase.newStatefulKnowledgeSession());
 
         ObjectTypeNode aotn = getObjectTypeNode(kbase, LinkingTest.A.class );
 

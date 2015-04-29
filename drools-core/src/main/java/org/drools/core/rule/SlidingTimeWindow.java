@@ -18,11 +18,9 @@ package org.drools.core.rule;
 
 import org.drools.core.common.EventFactHandle;
 import org.drools.core.common.InternalFactHandle;
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.PropagationContextFactory;
 import org.drools.core.common.WorkingMemoryAction;
-import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.drools.core.marshalling.impl.MarshallerWriteContext;
 import org.drools.core.marshalling.impl.PersisterEnums;
@@ -216,7 +214,7 @@ public class SlidingTimeWindow
             if ( nextTimestamp < clock.getCurrentTime() ) {
                 // Past and out-of-order events should not be insert,
                 // but the engine silently accepts them anyway, resulting in possibly undesirable behaviors
-                workingMemory.addPropagation(new BehaviorExpireWMAction(nodeId, this, context, pctx));
+                workingMemory.queueWorkingMemoryAction(new BehaviorExpireWMAction(nodeId, this, context, pctx));
             } else {
                 JobContext jobctx = new BehaviorJobContext( nodeId, workingMemory, this, context, pctx);
                 JobHandle handle = clock.scheduleJob( job,
@@ -407,10 +405,10 @@ public class SlidingTimeWindow
 
         public void execute(JobContext ctx) {
             BehaviorJobContext context = (BehaviorJobContext) ctx;
-            context.workingMemory.addPropagation( new BehaviorExpireWMAction( context.nodeId,
-                                                                              context.behavior,
-                                                                              context.behaviorContext,
-                                                                              context.pctx ) );
+            context.workingMemory.queueWorkingMemoryAction( new BehaviorExpireWMAction( context.nodeId,
+                                                                                        context.behavior,
+                                                                                        context.behaviorContext,
+                                                                                        context.pctx ) );
         }
 
     }
@@ -475,20 +473,6 @@ public class SlidingTimeWindow
                                        workingMemory );
         }
 
-        public void execute(InternalKnowledgeRuntime kruntime) {
-            execute(((StatefulKnowledgeSessionImpl) kruntime).getInternalWorkingMemory());
-        }
-        
-        public void write(MarshallerWriteContext outputCtx) throws IOException {
-            outputCtx.writeShort( WorkingMemoryAction.WorkingMemoryBehahviourRetract );
-
-            // write out SlidingTimeWindowContext
-            SlidingTimeWindowContext slCtx = ( SlidingTimeWindowContext ) context;
-
-            EventFactHandle handle = slCtx.getQueue().peek();
-            outputCtx.writeInt( handle.getId() );
-        }
-            
         public ProtobufMessages.ActionQueue.Action serialize(MarshallerWriteContext outputCtx) {
             SlidingTimeWindowContext slCtx = ( SlidingTimeWindowContext ) context;
             
@@ -501,13 +485,6 @@ public class SlidingTimeWindow
                     .setBehaviorExpire( _be )
                     .build();
                     
-        }
-
-        public void readExternal(ObjectInput in) throws IOException,
-                                                ClassNotFoundException {
-        }
-
-        public void writeExternal(ObjectOutput out) throws IOException {
         }
     }
 }

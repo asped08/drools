@@ -14,6 +14,8 @@ public interface PropagationEntry {
     PropagationEntry getNext();
     void setNext(PropagationEntry next);
 
+    boolean isMarshallable();
+
     abstract class AbstractPropagationEntry implements PropagationEntry {
         private PropagationEntry next;
 
@@ -23,6 +25,11 @@ public interface PropagationEntry {
 
         public PropagationEntry getNext() {
             return next;
+        }
+
+        @Override
+        public boolean isMarshallable() {
+            return false;
         }
     }
 

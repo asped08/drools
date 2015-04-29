@@ -39,7 +39,6 @@ import org.drools.core.common.Scheduler;
 import org.drools.core.common.TruthMaintenanceSystemHelper;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.phreak.RuleAgendaItem;
 import org.drools.core.reteoo.LeftTuple;
 import org.drools.core.reteoo.ObjectTypeConf;
@@ -1434,7 +1433,7 @@ public class ReteAgenda<M extends ModedAssertion<M>>
         }
         while ( continueFiring( -1 ) ) {
             boolean fired = fireNextItem( agendaFilter, 0, -1 ) >= 0 ||
-                            !((StatefulKnowledgeSessionImpl) this.workingMemory).getActionQueue().isEmpty();
+                            !((ReteWorkingMemory) this.workingMemory).getActionQueue().isEmpty();
             this.workingMemory.executeQueuedActions();
             if ( !fired ) {
                 try {

@@ -10,7 +10,6 @@ import org.drools.core.common.LeftTupleSets;
 import org.drools.core.common.Memory;
 import org.drools.core.common.StreamTupleEntryQueue;
 import org.drools.core.common.TupleEntryQueue;
-import org.drools.core.conflict.DepthConflictResolver;
 import org.drools.core.conflict.PhreakConflictResolver;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.reteoo.BetaMemory;
@@ -93,7 +92,7 @@ public class RuleExecutor {
     public synchronized void evaluateNetwork(InternalWorkingMemory wm) {
         NETWORK_EVALUATOR.evaluateNetwork(pmem, null, this, wm);
         setDirty(false);
-        wm.executeQueuedActions();
+        wm.flushPropagations();
     }
 
     public synchronized int evaluateNetworkAndFire( InternalWorkingMemory wm,
@@ -106,7 +105,7 @@ public class RuleExecutor {
         boolean fireUntilHalt = agenda.isFireUntilHalt();
 
         reEvaluateNetwork(wm, outerStack, true);
-        wm.executeQueuedActions();
+        wm.flushPropagations();
         return fire(wm, filter, fireCount, fireLimit, outerStack, (InternalAgenda) wm.getAgenda());
     }
 
@@ -176,7 +175,7 @@ public class RuleExecutor {
                         break; // another rule has high priority and is on the agenda, so evaluate it first
                     }
                     reEvaluateNetwork(wm, outerStack, false);
-                    wm.executeQueuedActions();
+                    wm.flushPropagations();
                 }
 
                 if (tupleList.isEmpty() && !outerStack.isEmpty()) {

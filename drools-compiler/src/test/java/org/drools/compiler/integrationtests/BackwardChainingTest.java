@@ -6,6 +6,7 @@ import org.drools.compiler.Person;
 import org.drools.core.InitialFact;
 import org.drools.core.base.ClassObjectType;
 import org.drools.core.common.InternalFactHandle;
+import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.reteoo.AccumulateNode;
@@ -18,7 +19,6 @@ import org.drools.core.reteoo.FromNode.FromMemory;
 import org.drools.core.reteoo.NotNode;
 import org.drools.core.reteoo.ObjectTypeNode;
 import org.drools.core.reteoo.QueryElementNode;
-import org.drools.core.reteoo.ReteooWorkingMemoryInterface;
 import org.drools.core.reteoo.RightInputAdapterNode;
 import org.junit.Test;
 import org.kie.api.io.ResourceType;
@@ -1571,7 +1571,7 @@ public class BackwardChainingTest extends CommonTestMethodBase {
         NotNode notNode = (NotNode) riaNode3.getSinkPropagator().getSinks()[0];
 
         StatefulKnowledgeSession ksession = createKnowledgeSession( kbase );
-        ReteooWorkingMemoryInterface wm = ((StatefulKnowledgeSessionImpl) ksession);
+        InternalWorkingMemory wm = ((StatefulKnowledgeSessionImpl) ksession);
         AccumulateMemory accMemory = (AccumulateMemory) wm.getNodeMemory( accNode );
         BetaMemory existsMemory = (BetaMemory) wm.getNodeMemory( existsNode );
         FromMemory fromMemory = (FromMemory) wm.getNodeMemory( fromNode );

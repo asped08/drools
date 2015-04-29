@@ -21,7 +21,6 @@ import org.drools.core.WorkingMemory;
 import org.drools.core.beliefsystem.ModedAssertion;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.StatefulKnowledgeSessionImpl;
 import org.drools.core.phreak.RuleAgendaItem;
 import org.drools.core.phreak.RuleExecutor;
 import org.drools.core.phreak.StackEntry;
@@ -1025,7 +1024,7 @@ public class DefaultAgenda
                         if ( localFireCount == 0 ) {
                             // nothing matched
                             tryagain = true; // will force the next Activation of the agenda, without going to outer loop which checks halt
-                            this.workingMemory.executeQueuedActions(); // There may actions to process, which create new rule matches
+                            this.workingMemory.flushPropagations(); // There may actions to process, which create new rule matches
                         }
                     }
 
@@ -1306,9 +1305,8 @@ public class DefaultAgenda
                     log.trace("Starting fireUntilHalt");
                 }
                 while ( continueFiring( -1 ) ) {
-                    boolean fired = fireNextItem( agendaFilter, 0, -1 ) > 0 ||
-                                    !((StatefulKnowledgeSessionImpl) this.workingMemory).getActionQueue().isEmpty();
-                    this.workingMemory.executeQueuedActions();
+                    boolean fired = fireNextItem( agendaFilter, 0, -1 ) > 0 || workingMemory.hasPendingPropagations();
+                    this.workingMemory.flushPropagations();
                     if ( !fired ) {
                         synchronized ( this.halt ) {
                             // has to check in here because a different thread might have set the halt flag already
@@ -1352,7 +1350,7 @@ public class DefaultAgenda
                 do {
                     returnedFireCount = fireNextItem( agendaFilter, fireCount, fireLimit );
                     fireCount += returnedFireCount;
-                    this.workingMemory.executeQueuedActions();
+                    this.workingMemory.flushPropagations();
                 } while ( continueFiring( 0 ) && returnedFireCount != 0 && (fireLimit == -1 || (fireCount < fireLimit)) );
                 if ( this.focusStack.size() == 1 && getMainAgendaGroup().isEmpty() ) {
                     // the root MAIN agenda group is empty, reset active to false, so it can receive more activations.

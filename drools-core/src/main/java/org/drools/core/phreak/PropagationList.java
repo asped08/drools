@@ -2,10 +2,17 @@ package org.drools.core.phreak;
 
 import org.drools.core.common.InternalWorkingMemory;
 
+import java.util.Iterator;
+
 public interface PropagationList {
     void addEntry(PropagationEntry propagationEntry);
 
     void flush(InternalWorkingMemory workingMemory);
+    void flushNonMarshallable(InternalWorkingMemory workingMemory);
 
-    public void reset();
+    void reset();
+
+    boolean isEmpty();
+
+    Iterator<PropagationEntry> iterator();
 }

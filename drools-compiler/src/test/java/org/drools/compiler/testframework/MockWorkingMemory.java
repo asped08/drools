@@ -387,7 +387,22 @@ public class MockWorkingMemory implements InternalWorkingMemory {
     @Override
     public void flushPropagations() {
         // TODO Auto-generated method stub
+    }
 
+    @Override
+    public void flushNonMarshallablePropagations() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean hasPendingPropagations() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public Iterator<? extends PropagationEntry> getActionsIterator() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public void addEventListener(RuleRuntimeEventListener listener) {

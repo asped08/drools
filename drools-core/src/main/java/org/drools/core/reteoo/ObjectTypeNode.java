@@ -297,7 +297,7 @@ public class ObjectTypeNode extends ObjectSource
         }
 
         if ( context.getReaderContext() == null && this.objectType.isEvent() && this.expirationOffset >= 0 && this.expirationOffset != Long.MAX_VALUE ) {
-            scheduleExpiration(context, workingMemory, factHandle, expirationOffset, new WorkingMemoryReteExpireAction( factHandle, this ));
+            scheduleExpiration(context, workingMemory, factHandle, expirationOffset, new WorkingMemoryReteExpireAction((EventFactHandle) factHandle, this));
         }
     }
 
@@ -310,13 +310,6 @@ public class ObjectTypeNode extends ObjectSource
             this.sink.propagateAssertObject(factHandle,
                                             context,
                                             workingMemory);
-        }
-    }
-
-    void initAssert(InternalFactHandle factHandle, PropagationContext context, InternalWorkingMemory workingMemory) {
-        checkDirty();
-        if ( context.getReaderContext() == null && this.objectType.isEvent() && this.expirationOffset >= 0 && this.expirationOffset != Long.MAX_VALUE ) {
-            scheduleExpiration(context, workingMemory, factHandle, expirationOffset, new WorkingMemoryReteExpireAction( factHandle, this ));
         }
     }
 
@@ -719,7 +712,7 @@ public class ObjectTypeNode extends ObjectSource
 
             TimerService clock = inCtx.wm.getTimerService();
 
-            JobContext jobctx = new ExpireJobContext( new WorkingMemoryReteExpireAction( factHandle, otn ),
+            JobContext jobctx = new ExpireJobContext( new WorkingMemoryReteExpireAction( (EventFactHandle) factHandle, otn ),
                                                       inCtx.wm );
             JobHandle handle = clock.scheduleJob( job,
                                                   jobctx,
@@ -740,7 +733,7 @@ public class ObjectTypeNode extends ObjectSource
 
             TimerService clock = inCtx.wm.getTimerService();
 
-            JobContext jobctx = new ExpireJobContext( new WorkingMemoryReteExpireAction(factHandle, otn),
+            JobContext jobctx = new ExpireJobContext( new WorkingMemoryReteExpireAction((EventFactHandle)factHandle, otn),
                                                       inCtx.wm );
             JobHandle jobHandle = clock.scheduleJob( job,
                                                      jobctx,

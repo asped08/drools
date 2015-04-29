@@ -2761,7 +2761,7 @@ public class CepEspTest extends CommonTestMethodBase {
         }
     }
 
-    @Test(timeout=10000)
+    @Test//(timeout=10000)
     public void testEventExpirationInSlidingWindow() throws Exception {
         // DROOLS-70
         String str =
@@ -3854,19 +3854,19 @@ public class CepEspTest extends CommonTestMethodBase {
         StatefulKnowledgeSession ksession = createKnowledgeSession(kbase, ksconf);
 
         SessionPseudoClock clock = (SessionPseudoClock) ksession.<SessionClock>getSessionClock();
-        EntryPoint ePoint = ksession.getEntryPoint( "EStream" );
-        EntryPoint entryPoint = ksession.getEntryPoint( "EventStream" );
+        EntryPoint ePoint = ksession.getEntryPoint("EStream");
+        EntryPoint entryPoint = ksession.getEntryPoint("EventStream");
 
 
         ePoint.insert(new StockTick(0L, "zero", 0.0, 0));
 
         entryPoint.insert(new StockTick(1L, "one", 0.0, 0));
 
-        clock.advanceTime( 10, TimeUnit.SECONDS );
+        clock.advanceTime(10, TimeUnit.SECONDS);
 
         entryPoint.insert(new StockTick(2L, "two",0.0,  0));
 
-        clock.advanceTime( 10, TimeUnit.SECONDS );
+        clock.advanceTime(10, TimeUnit.SECONDS);
 
         entryPoint.insert(new StockTick(3L, "three", 0.0, 0));
 
@@ -3990,8 +3990,58 @@ public class CepEspTest extends CommonTestMethodBase {
 
         assertEquals( 2, list.size() );
         assertEquals( Arrays.asList( 2L, 3L ), list );
+    }
 
+    @Test
+    public void testDeserializationWithExpiringEventAndAccumulate() throws InterruptedException {
+        String drl = "package org.drools.test;\n" +
+                     "import org.drools.compiler.StockTick; \n" +
+                     "global java.util.List list;\n" +
+                     "\n" +
+                     "declare StockTick\n" +
+                     "  @role( event )\n" +
+                     "  @expires( 1s )\n" +
+                     "end\n" +
+                     "\n" +
+                     "rule R\n" +
+                     "when\n" +
+                     "  accumulate ( StockTick( company == \"BBB\", $p : price), " +
+                     "              $sum : sum( $p );" +
+                     "              $sum > 0 )\n" +
+                     "then\n" +
+                     "  list.add( $sum ); \n" +
+                     "end";
+        final KieBaseConfiguration kbconf = KnowledgeBaseFactory.newKnowledgeBaseConfiguration();
+        kbconf.setOption( EventProcessingOption.STREAM );
+        kbconf.setOption( RuleEngineOption.PHREAK );
 
+        KieSessionConfiguration knowledgeSessionConfiguration = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+
+        KnowledgeBase kb = loadKnowledgeBaseFromString( kbconf, drl );
+        StatefulKnowledgeSession ks = kb.newStatefulKnowledgeSession( knowledgeSessionConfiguration, null );
+
+        ks.insert( new StockTick( 1, "BBB", 1.0, 0 ) );
+        Thread.sleep( 1000 );
+        ks.insert(new StockTick(2, "BBB", 2.0, 0));
+        Thread.sleep( 100 );
+
+        try {
+            ks = SerializationHelper.getSerialisedStatefulKnowledgeSession( ks, true, false );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        }
+
+        List<Double> list = new ArrayList<Double>();
+        ks.setGlobal( "list", list );
+
+        ks.fireAllRules();
+
+        ks.insert(new StockTick(3, "BBB", 3.0, 0));
+        ks.fireAllRules();
+
+        assertEquals( 2, list.size() );
+        assertEquals( Arrays.asList( 2.0, 5.0 ), list );
     }
 
     @Test
