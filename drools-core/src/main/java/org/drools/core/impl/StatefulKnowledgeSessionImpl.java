@@ -1603,7 +1603,6 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         try {
             startOperation();
             addPropagation(action);
-            this.agenda.notifyHalt();
         } finally {
             endOperation();
         }
@@ -2160,7 +2159,9 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
     }
 
     public void addPropagation(PropagationEntry propagationEntry) {
-        propagationList.addEntry(propagationEntry);
+        if (propagationList.addEntry(propagationEntry)) {
+            agenda.notifyHalt();
+        }
     }
 
     public void flushPropagations() {

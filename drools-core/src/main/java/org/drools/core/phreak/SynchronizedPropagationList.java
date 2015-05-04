@@ -9,13 +9,15 @@ public class SynchronizedPropagationList implements PropagationList {
     private volatile PropagationEntry tail;
 
     @Override
-    public synchronized void addEntry(PropagationEntry entry) {
-        if (head == null) {
+    public synchronized boolean addEntry(PropagationEntry entry) {
+        boolean wasEmpty = head == null;
+        if (wasEmpty) {
             head = entry;
         } else {
             tail.setNext(entry);
         }
         tail = entry;
+        return wasEmpty;
     }
 
     @Override

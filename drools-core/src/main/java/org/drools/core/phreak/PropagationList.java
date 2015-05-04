@@ -5,7 +5,7 @@ import org.drools.core.common.InternalWorkingMemory;
 import java.util.Iterator;
 
 public interface PropagationList {
-    void addEntry(PropagationEntry propagationEntry);
+    boolean addEntry(PropagationEntry propagationEntry);
 
     void flush(InternalWorkingMemory workingMemory);
     void flushNonMarshallable(InternalWorkingMemory workingMemory);

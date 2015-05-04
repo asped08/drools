@@ -288,10 +288,7 @@ public class DefaultAgenda
         if ( log.isTraceEnabled() ) {
             log.trace("Added {} to eager evaluation list.", item.getRule().getName() );
         }
-        synchronized (eager) {
-            eager.add( item );
-        }
-        notifyHalt();
+        eager.add( item );
     }
 
     @Override
@@ -303,9 +300,7 @@ public class DefaultAgenda
         if ( log.isTraceEnabled() ) {
             log.trace("Removed {} from eager evaluation list.", item.getRule().getName() );
         }
-        synchronized (eager) {
-            eager.remove(item);
-        }
+        eager.remove(item);
     }
 
     @Override
@@ -1041,14 +1036,12 @@ public class DefaultAgenda
     }
 
     public void evaluateEagerList() {
-        synchronized (eager) {
-            while ( !eager.isEmpty() ) {
-                RuleAgendaItem item = eager.removeFirst();
-                evaluateQueriesForRule(item);
-                RuleExecutor ruleExecutor = item.getRuleExecutor();
-                ruleExecutor.flushTupleQueue(ruleExecutor.getPathMemory().getStreamQueue());
-                ruleExecutor.evaluateNetwork(this.workingMemory);
-            }
+        while ( !eager.isEmpty() ) {
+            RuleAgendaItem item = eager.removeFirst();
+            evaluateQueriesForRule(item);
+            RuleExecutor ruleExecutor = item.getRuleExecutor();
+            ruleExecutor.flushTupleQueue(ruleExecutor.getPathMemory().getStreamQueue());
+            ruleExecutor.evaluateNetwork(this.workingMemory);
         }
     }
 
