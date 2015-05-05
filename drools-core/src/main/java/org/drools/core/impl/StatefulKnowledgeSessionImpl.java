@@ -443,7 +443,7 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
             runtime  = (T) service.newKieRuntime(this);
         }
 
-        return (T) runtime;
+        return runtime;
     }
 
     public EntryPoint getEntryPoint(String name) {
@@ -567,13 +567,13 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
                                        ObjectStoreWrapper.FACT_HANDLE );
     }
 
-    public Collection<? extends Object> getObjects() {
+    public Collection<?> getObjects() {
         return new ObjectStoreWrapper( getObjectStore(),
                                        null,
                                        ObjectStoreWrapper.OBJECT );
     }
 
-    public Collection<? extends Object> getObjects(org.kie.api.runtime.ObjectFilter filter) {
+    public Collection<?> getObjects(org.kie.api.runtime.ObjectFilter filter) {
         return new ObjectStoreWrapper( getObjectStore(),
                                        filter,
                                        ObjectStoreWrapper.OBJECT );
@@ -897,9 +897,8 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         }
         LeftInputAdapterNode lian = ( LeftInputAdapterNode ) lts;
         LeftInputAdapterNode.LiaNodeMemory lmem = (LeftInputAdapterNode.LiaNodeMemory) getNodeMemory( (MemoryFactory) lts);
-        SegmentMemory lsmem = lmem.getSegmentMemory();
-        if ( lsmem == null) {
-            lsmem = SegmentUtilities.createSegmentMemory(lts, this);
+        if ( lmem.getSegmentMemory() == null) {
+            SegmentUtilities.createSegmentMemory(lts, this);
         }
 
         LeftInputAdapterNode.doInsertObject( handle, pCtx, lian, this, lmem, false, queryObject.isOpen() );
@@ -926,7 +925,7 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
                                                                                  null, null, factHandle, getEntryPoint());
 
             LeftInputAdapterNode lian = ( LeftInputAdapterNode ) factHandle.getFirstLeftTuple().getLeftTupleSink().getLeftTupleSource();
-            LeftInputAdapterNode.LiaNodeMemory lmem = (LeftInputAdapterNode.LiaNodeMemory) getNodeMemory( (MemoryFactory) lian);
+            LeftInputAdapterNode.LiaNodeMemory lmem = (LeftInputAdapterNode.LiaNodeMemory) getNodeMemory(lian);
             SegmentMemory lsmem = lmem.getSegmentMemory();
 
             LeftTuple childLeftTuple = factHandle.getFirstLeftTuple(); // there is only one, all other LTs are peers
@@ -1557,43 +1556,6 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         // NO-OP: this is necessary only for rete
     }
 
-    private static class WorkingMemoryActionIterator implements Iterator<WorkingMemoryAction> {
-        private final Iterator<PropagationEntry> iterator;
-        private WorkingMemoryAction next;
-
-        private WorkingMemoryActionIterator(Iterator<PropagationEntry> iterator) {
-            this.iterator = iterator;
-            fetchNext();
-        }
-
-        private void fetchNext() {
-            while (iterator.hasNext()) {
-                PropagationEntry entry = iterator.next();
-                if (entry instanceof WorkingMemoryAction) {
-                    next = ((WorkingMemoryAction) entry);
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            return next != null;
-        }
-
-        @Override
-        public WorkingMemoryAction next() {
-            WorkingMemoryAction current = next;
-            fetchNext();
-            return current;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    };
-
     public void queueWorkingMemoryAction(final WorkingMemoryAction action) {
         try {
             startOperation();
@@ -1731,7 +1693,7 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
                 }
                 _assert.setOriginPkgName( ruleOrigin.getPackageName() )
                        .setOriginRuleName( ruleOrigin.getName() )
-                       .setTuple( _tuple.build() );
+                       .setTuple(_tuple.build());
             }
             return ProtobufMessages.ActionQueue.Action.newBuilder()
                                                .setType( ProtobufMessages.ActionQueue.ActionType.ASSERT )
@@ -1841,13 +1803,6 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         @Override
         public boolean isMarshallable() {
             return true;
-        }
-    }
-
-    public class RuleFlowDeactivateEvent {
-
-        public void propagate() {
-
         }
     }
 
@@ -1999,8 +1954,7 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
     }
 
     public WorkingMemoryEntryPoint getWorkingMemoryEntryPoint(String name) {
-        WorkingMemoryEntryPoint wmEntryPoint = this.entryPoints.get(name);
-        return wmEntryPoint;
+        return this.entryPoints.get(name);
     }
 
     public Map<String, WorkingMemoryEntryPoint> getWorkingMemoryEntryPoints() {

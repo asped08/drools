@@ -436,8 +436,7 @@ public class DefaultAgenda
 
         if ( activation.isQueued() ) {
             // on fact expiration, we don't remove the activation, but let it fire
-            if ( context.getType() == PropagationContext.EXPIRATION && context.getFactHandleOrigin() != null ) {
-            } else {
+            if ( context.getType() != PropagationContext.EXPIRATION || context.getFactHandleOrigin() == null ) {
                 if ( activation.getActivationGroupNode() != null ) {
                     activation.getActivationGroupNode().getActivationGroup().removeActivation( activation );
                 }
