@@ -7,7 +7,6 @@ import org.drools.core.common.InternalAgendaGroup;
 import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.Memory;
 import org.drools.core.common.NetworkNode;
-import org.drools.core.common.StreamTupleEntryQueue;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.phreak.RuleAgendaItem;
 import org.drools.core.util.AbstractBaseLinkedListNode;
@@ -28,23 +27,10 @@ public class PathMemory extends AbstractBaseLinkedListNode<Memory>
     private volatile RuleAgendaItem    agendaItem;
     private          SegmentMemory[]   segmentMemories;
     private          SegmentMemory     segmentMemory;
-    protected StreamTupleEntryQueue queue;
 
     public PathMemory(NetworkNode networkNode) {
         this.networkNode = networkNode;
         this.linkedSegmentMask = new AtomicBitwiseLong();
-    }
-
-    public void initQueue() {
-        this.queue = new StreamTupleEntryQueue();
-    }
-
-    public StreamTupleEntryQueue getStreamQueue() {
-        return queue;
-    }
-
-    public void setStreamQueue(StreamTupleEntryQueue queue) {
-        this.queue = queue;
     }
 
     public NetworkNode getNetworkNode() {
@@ -93,10 +79,6 @@ public class PathMemory extends AbstractBaseLinkedListNode<Memory>
         if (isRuleLinked()) {
             doLinkRule(wm);
         }
-    }
-
-    public boolean hasAgendaItem() {
-        return agendaItem != null;
     }
 
     public synchronized RuleAgendaItem getOrCreateRuleAgendaItem(InternalWorkingMemory wm) {
@@ -203,9 +185,6 @@ public class PathMemory extends AbstractBaseLinkedListNode<Memory>
     }
 
     public void reset() {
-        if (this.queue != null) {
-            this.queue = new StreamTupleEntryQueue();
-        }
         this.linkedSegmentMask.set(0);
     }
 }

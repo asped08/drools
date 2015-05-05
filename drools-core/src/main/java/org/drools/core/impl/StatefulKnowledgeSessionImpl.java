@@ -69,7 +69,6 @@ import org.drools.core.marshalling.impl.ProtobufMessages;
 import org.drools.core.phreak.PropagationEntry;
 import org.drools.core.phreak.PropagationList;
 import org.drools.core.phreak.RuleAgendaItem;
-import org.drools.core.phreak.RuleExecutor;
 import org.drools.core.phreak.SegmentUtilities;
 import org.drools.core.phreak.SynchronizedPropagationList;
 import org.drools.core.reteoo.ClassObjectTypeConf;
@@ -386,7 +385,7 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
 
         this.sequential = conf.isSequential();
 
-        this.kieBaseEventListeners = new LinkedList();
+        this.kieBaseEventListeners = new LinkedList<KieBaseEventListener>();
         this.lock = new ReentrantLock();
 
         timerService = TimerServiceFactory.getTimerService(this.config);
@@ -904,10 +903,6 @@ public class StatefulKnowledgeSessionImpl extends AbstractRuntime
         }
 
         LeftInputAdapterNode.doInsertObject( handle, pCtx, lian, this, lmem, false, queryObject.isOpen() );
-
-        if ( kBase.getConfiguration().isPhreakEnabled() ) {
-            RuleExecutor.flushTupleQueue(lmem.getSegmentMemory().getStreamQueue());
-        }
 
         List<PathMemory> pmems =  lmem.getSegmentMemory().getPathMemories();
         for ( int i = 0, length = pmems.size(); i < length; i++ ) {
